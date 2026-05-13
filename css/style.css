@@ -152,8 +152,8 @@ iframe {
 }
 
 .member-card img {
-  width: 300px;
-  height: 100%;
+  width: 320px;
+  height: 480px;
   object-fit: cover;
 }
 
