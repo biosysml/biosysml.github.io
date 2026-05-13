@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Research | BioSysML Lab</title>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">BioSysML Lab</div>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="research.html">Research</a>
+    <a href="liveplots.html">Live Plots</a>
+    <a href="team.html">Team</a>
+    <a href="publications.html">Publications</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+
+<div class="dashboard-layout">
+
+  <aside class="sidebar">
+    <h2>Research Areas</h2>
+
+    <button onclick="showResearch('mathbio')">
+      Mathematical Biology
+    </button>
+
+    <button onclick="showResearch('neuro')">
+      Computational Neuroscience
+    </button>
+
+    <button onclick="showResearch('ecology')">
+      Ecological Dynamics
+    </button>
+
+    <button onclick="showResearch('ml')">
+      Scientific Machine Learning
+    </button>
+
+    <button onclick="showResearch('pinns')">
+      PINNs & AI Simulations
+    </button>
+  </aside>
+
+  <main class="content-panel">
+
+    <div id="mathbio" class="research-content active-content">
+      <h1>Mathematical Biology</h1>
+      <p>
+        Reaction–diffusion systems, bifurcations,
+        pattern formation, disease modelling,
+        nonlinear dynamical systems.
+      </p>
+    </div>
+
+    <div id="neuro" class="research-content">
+      <h1>Computational Neuroscience</h1>
+      <p>
+        Alzheimer’s disease propagation,
+        neural dynamics, neurodegenerative modelling.
+      </p>
+    </div>
+
+    <div id="ecology" class="research-content">
+      <h1>Ecological Dynamics</h1>
+      <p>
+        Predator–prey systems,
+        vegetation patterns,
+        ecosystem resilience.
+      </p>
+    </div>
+
+    <div id="ml" class="research-content">
+      <h1>Scientific Machine Learning</h1>
+      <p>
+        Deep learning, surrogate models,
+        data-driven biology.
+      </p>
+    </div>
+
+    <div id="pinns" class="research-content">
+      <h1>PINNs & AI Simulations</h1>
+      <p>
+        Physics-informed neural networks,
+        equilibrium-informed AI,
+        scientific computing.
+      </p>
+    </div>
+
+  </main>
+
+</div>
+
+<script src="js/research.js"></script>
+</body>
+</html>

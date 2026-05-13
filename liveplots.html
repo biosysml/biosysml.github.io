@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Plots | BioSysML Lab</title>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">BioSysML Lab</div>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="research.html">Research</a>
+    <a href="liveplots.html">Live Plots</a>
+    <a href="team.html">Team</a>
+    <a href="publications.html">Publications</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+
+<div class="dashboard-layout">
+
+  <aside class="sidebar">
+    <h2>Plot Types</h2>
+
+    <button onclick="showPlot('vectorplot')">
+      Vector Plots
+    </button>
+
+    <button onclick="showPlot('bifurcation')">
+      Bifurcation Diagrams
+    </button>
+
+    <button onclick="showPlot('linearreg')">
+      Linear and Nonlinear Regression
+    </button>
+
+  </aside>
+
+  <main class="content-panel">
+
+    <div id="vectorplot" class="plot-content active-content">
+      <h1>Interactive Vector Field Generator</h1>
+      
+      <iframe src="plots/vector-field.html" scrolling="no"></iframe>
+    </div>
+
+    <div id="bifurcation" class="plot-content">
+      <h1>Bifurcation Diagrams</h1>
+
+      <iframe src="plots/bifurcation.html"></iframe>
+    </div>
+
+    <div id="linearreg" class="plot-content">
+      <h1>Linear and Nonlinear Regression</h1>
+
+      <iframe src="plots/linear-regression.html"></iframe>
+    </div>
+
+
+
+  </main>
+
+</div>
+
+<script src="js/plots.js"></script>
+</body>
+</html>
+```
