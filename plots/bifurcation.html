@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bifurcation Diagram</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+
+<div id="plot" style="width:100%;height:100vh;"></div>
+
+<script>
+
+let x = [];
+let y = [];
+
+for(let r = 2.5; r < 4; r += 0.01){
+
+  let xn = 0.5;
+
+  for(let i=0;i<100;i++) {
+    xn = r*xn*(1-xn);
+  }
+
+  for(let i=0;i<50;i++) {
+    xn = r*xn*(1-xn);
+
+    x.push(r);
+    y.push(xn);
+  }
+}
+
+const trace = {
+  x: x,
+  y: y,
+  mode: 'markers',
+  type: 'scatter',
+  marker: {
+    size: 2
+  }
+};
+
+Plotly.newPlot('plot',[trace]);
+
+</script>
+
+</body>
+</html>
