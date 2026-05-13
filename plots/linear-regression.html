@@ -208,7 +208,7 @@
 <script>
     // --- 1. FULL FUNCTION LIBRARY DEFINITION ---
     const libraryCategories = [
-        { cat: "Basic Functions", names: ["Allometric1", "Beta", "Boltzmann", "Dhyperbl", "ExpAssoc", "ExpDecay1", "ExpDecay2", "ExpDecay3", "ExpGrow1", "ExpGrow2", "Gauss", "GaussAmp", "Hyperbl", "Logistic", "LogNormal", "Lorentz", "Pulse", "Rational0", "Sine", "Voigt"] },
+        { cat: "Basic Functions", names: ["Linear", "Allometric1", "Beta", "Boltzmann", "Dhyperbl", "ExpAssoc", "ExpDecay1", "ExpDecay2", "ExpDecay3", "ExpGrow1", "ExpGrow2", "Gauss", "GaussAmp", "Hyperbl", "Logistic", "LogNormal", "Lorentz", "Pulse", "Rational0", "Sine", "Voigt"] },
         { cat: "Exponential", names: ["Asymptotic1", "BoxLucas1", "BoxLucas2", "Chapman", "Exp1P1", "Exp1P2", "Exp2P", "Exp3P1", "Exp3P2", "ExpLinear", "Shah", "Stirling"] },
         { cat: "Growth & Sigmoidal", names: ["Hill", "SGompertz", "SLogistic1", "SLogistic2", "SLogistic3", "SRichards1", "SRichards2", "SWeibull1", "SWeibull2"] },
         { cat: "Hyperbola", names: ["HyperbolaGen", "HyperbolaMod", "RectHyperbola"] },
@@ -219,6 +219,7 @@
     ];
 
     const exactMath = {
+        "Linear": { eq: "a + b*x", fStr: "a + b* x", p:['a','b'] },
         "Allometric1": { eq: "a x^b", fStr: "a * x**b", p:['a','b'] },
         "Beta": { eq: "y_0 + A(x/w_1)^{w_2}...", fStr: "a*x**3 + b*x**2 + c*x + d", p:['a','b','c','d'] },
         "Boltzmann": { eq: "(a-b)/(1+e^{(x-c)/d})+b", fStr: "(a-b)/(1+Math.exp((x-c)/(d||1e-7)))+b", p:['a','b','c','d'] },
