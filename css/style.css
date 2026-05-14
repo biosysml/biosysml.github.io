@@ -56,7 +56,47 @@ header {
   align-items: center;
 }
 
+.card,
+.member-card,
+.publication-card,
+.sidebar button {
+  transition: all 0.4s ease;
+}
 
+.card:hover,
+.member-card:hover,
+.publication-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+}
+
+.sidebar button:hover {
+  transform: translateX(8px);
+}
+
+nav a {
+  position: relative;
+  transition: 0.3s;
+}
+
+nav a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 0;
+  height: 2px;
+  background: #8ef0c8;
+  transition: width 0.3s ease;
+}
+
+nav a:hover::after {
+  width: 100%;
+}
+
+.button {
+  transition: all 0.4s ease;
+}
 
 nav a {
   color: white;
@@ -64,6 +104,19 @@ nav a {
   text-decoration: none;
 }
 
+.button:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 20px rgba(142,240,200,0.6);
+}
+
+.research-content,
+.plot-content {
+  animation: fadeInUp 0.7s ease;
+}
+
+iframe {
+  animation: fadeInUp 1s ease;
+}
 
 .hero {
       min-height: 90vh;
