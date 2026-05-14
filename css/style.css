@@ -225,7 +225,6 @@ iframe {
   width: fit-content;
   border-right: 3px solid #1f9c72;
   animation:
-  typing 3s steps(30,end),
   blink 0.8s infinite;
 }
 
