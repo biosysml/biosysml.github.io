@@ -27,19 +27,16 @@
 
   <aside class="sidebar">
     <h2>Research Areas</h2>
-
-    <button onclick="showResearch('mathbio')">
-      Mathematical Biology
+    
+    <button onclick="showResearch('ecology')">
+      Ecological Dynamics
     </button>
 
     <button onclick="showResearch('neuro')">
       Computational Neuroscience
     </button>
 
-    <button onclick="showResearch('ecology')">
-      Ecological Dynamics
-    </button>
-
+    
     <button onclick="showResearch('ml')">
       Scientific Machine Learning
     </button>
@@ -51,31 +48,27 @@
 
   <main class="content-panel">
 
-    <div id="mathbio" class="research-content active-content">
-      <h1>Mathematical Biology</h1>
-      <p>
-        Reaction–diffusion systems, bifurcations,
-        pattern formation, disease modelling,
-        nonlinear dynamical systems.
-      </p>
-    </div>
-
-    <div id="neuro" class="research-content">
-      <h1>Computational Neuroscience</h1>
-      <p>
-        Alzheimer’s disease propagation,
-        neural dynamics, neurodegenerative modelling.
-      </p>
-    </div>
-
     <div id="ecology" class="research-content">
       <h1>Ecological Dynamics</h1>
       <p>
         Predator–prey systems,
         vegetation patterns,
-        ecosystem resilience.
+        ecosystem resilience, bifurcations,
+        pattern formation,
+        nonlinear dynamical systems.
       </p>
     </div>
+    
+
+    <div id="neuro" class="research-content">
+      <h1>Computational Neuroscience</h1>
+      <p>
+        Alzheimer’s disease propagation,
+        neural dynamics, neurodegenerative modeling.
+      </p>
+    </div>
+
+    
 
     <div id="ml" class="research-content">
       <h1>Scientific Machine Learning</h1>
@@ -89,7 +82,7 @@
       <h1>PINNs & AI Simulations</h1>
       <p>
         Physics-informed neural networks,
-        equilibrium-informed AI,
+        equilibrium-informed neural networks,
         scientific computing.
       </p>
     </div>
