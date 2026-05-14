@@ -124,7 +124,7 @@ iframe {
       align-items: center;
       justify-content: space-between;
       padding: 40px 8%;
-      background: linear-gradient(to right, rgba(11,31,58,0.95), rgba(12,108,143,0.85)), url('images/Background.png&w=1600&auto=format&fit=crop') center/cover;
+      background: linear-gradient(to right, rgba(11,31,58,0.95), rgba(12,108,143,0.85)), url('../images/Background.png') center/cover;
       color: white;
       gap: 50px;
       flex-wrap: wrap;
