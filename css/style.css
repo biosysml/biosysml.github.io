@@ -219,13 +219,10 @@ iframe {
 
 .page-container h1,
 .content-panel h1 {
-  position: relative;
-  overflow: hidden;
-  white-space: nowrap;
-  width: fit-content;
-  border-right: 3px solid #1f9c72;
-  animation:
-  blink 0.8s infinite;
+  animation: fadeInUp 1s ease;
+  border-right: none;
+  overflow: visible;
+  white-space: normal;
 }
 
 .grid-two {
