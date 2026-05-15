@@ -183,6 +183,15 @@ iframe {
   background: #1f9c72;
 }
 
+
+iframe {
+  width: 100%;
+  height: 2600px;
+  border: none;
+  border-radius: 20px;
+  background: white;
+}
+
 .content-panel {
   flex: 1;
   padding: 40px;
