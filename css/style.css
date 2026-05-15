@@ -233,9 +233,12 @@ iframe {
 }
 
 .team-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
   gap: 30px;
+  overflow-x: auto;
+  padding-bottom: 10px;
 }
 
 .member-card {
