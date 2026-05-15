@@ -750,6 +750,34 @@ section {
   animation: fadeInUp 1s ease;
 }
 
+/* Team Member Links */
+
+.member-links {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.member-links a {
+  padding: 10px 18px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+
+  background: linear-gradient(135deg,#10b981,#06b6d4);
+  color: white;
+
+  transition: all 0.4s ease;
+}
+
+.member-links a:hover {
+  transform: translateY(-3px) scale(1.05);
+
+  box-shadow:
+    0 0 20px rgba(16,185,129,0.4);
+}
 @media(max-width:900px) {
 
   .featured-news {
