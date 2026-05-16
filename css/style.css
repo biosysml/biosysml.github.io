@@ -199,6 +199,18 @@ iframe {
 }
 
 
+.research-frame{
+    width:100%;
+    margin:40px 0;
+}
+
+.research-frame iframe{
+    width:100%;
+    border:none;
+    overflow:hidden;
+    border-radius:16px;
+    background:white;
+}
 
 .research-content,
 .plot-content {
