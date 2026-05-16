@@ -7,6 +7,31 @@
 
   <link rel="stylesheet" href="css/style.css">
 </head>
+
+  <script>
+    function resizeIframe(iframe) {
+
+        function setHeight() {
+            iframe.style.height =
+                iframe.contentWindow.document.body.scrollHeight + "px";
+        }
+
+        setHeight();
+
+        iframe.contentWindow.addEventListener('resize', setHeight);
+
+        const observer = new MutationObserver(setHeight);
+
+        observer.observe(
+            iframe.contentWindow.document.body,
+            {
+                childList: true,
+                subtree: true,
+                attributes: true
+            }
+        );
+    }
+    </script>
 <body>
 
 
@@ -51,14 +76,18 @@
 
     <div id="ecology" class="research-content active-content">
       
-        <iframe src="res/ecological-dynamics.html" scrolling="no"></iframe>
+        <iframe src="res/ecological-dynamics.html" scrolling="no" frameborder="0"
+        scrolling="no"
+        onload="resizeIframe(this)></iframe>
       
     </div>
     
 
     <div id="neuro" class="research-content">
        
-      <iframe src="res/computational-neuroscience.html" scrolling="no"></iframe>
+      <iframe src="res/computational-neuroscience.html" scrolling="no" frameborder="0"
+        scrolling="no"
+        onload="resizeIframe(this)></iframe>
     
     </div>
 
@@ -66,13 +95,17 @@
 
     <div id="ml" class="research-content">
       
-      <iframe src="res/scientific-machine-learning.html" scrolling="no"></iframe>
+      <iframe src="res/scientific-machine-learning.html" scrolling="no" frameborder="0"
+        scrolling="no"
+        onload="resizeIframe(this)></iframe>
       
     </div>
 
     <div id="pinns" class="research-content">
       
-      <iframe src="res/pinns-ai-simulations.html" scrolling="no"></iframe>
+      <iframe src="res/pinns-ai-simulations.html" scrolling="no" frameborder="0"
+        scrolling="no"
+        onload="resizeIframe(this)></iframe>
       
     </div>
 
