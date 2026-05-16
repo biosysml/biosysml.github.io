@@ -8,30 +8,7 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 
-  <script>
-    function resizeIframe(iframe) {
 
-        function setHeight() {
-            iframe.style.height =
-                iframe.contentWindow.document.body.scrollHeight + "px";
-        }
-
-        setHeight();
-
-        iframe.contentWindow.addEventListener('resize', setHeight);
-
-        const observer = new MutationObserver(setHeight);
-
-        observer.observe(
-            iframe.contentWindow.document.body,
-            {
-                childList: true,
-                subtree: true,
-                attributes: true
-            }
-        );
-    }
-    </script>
 <body>
 
 
@@ -106,5 +83,29 @@
 </div>
 
 <script src="js/research.js"></script>
+          <script>
+    function resizeIframe(iframe) {
+
+        function setHeight() {
+            iframe.style.height =
+                iframe.contentWindow.document.body.scrollHeight + "px";
+        }
+
+        setHeight();
+
+        iframe.contentWindow.addEventListener('resize', setHeight);
+
+        const observer = new MutationObserver(setHeight);
+
+        observer.observe(
+            iframe.contentWindow.document.body,
+            {
+                childList: true,
+                subtree: true,
+                attributes: true
+            }
+        );
+    }
+    </script>
 </body>
 </html>
