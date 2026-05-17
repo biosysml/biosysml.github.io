@@ -34,23 +34,32 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
   background: #f5f7fb;
+  padding-top: 60px; 
 }
 
 header {
   background: linear-gradient(135deg,#0b1f3a,#0c6c8f,#1f9c72);
   color: white;
   padding: 22px 40px;
-  position: sticky;
+  position: fixed;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  top: 0;
+  left: 0;
+  width: 97%;
+  z-index: 100;
 }
 
 .card,
 .member-card,
 .publication-card,
 .sidebar button {
+
   transition: all 0.4s ease;
 }
 
@@ -98,6 +107,14 @@ nav a {
 .button:hover {
   transform: scale(1.08);
   box-shadow: 0 0 20px rgba(142,240,200,0.6);
+}
+
+.auto-iframe{
+    width:100%;
+    border:none;
+    overflow:hidden;
+    border-radius:16px;
+    margin:40px 0;
 }
 
 .research-content,
@@ -160,11 +177,24 @@ iframe {
   min-height: calc(100vh - 80px);
 }
 
+
 .sidebar {
-  width: 320px;
+
+  width: clamp(200px, 25vw, 350px); 
+  flex-shrink: 0; /* Prevents the main content from crushing the sidebar */
   background: #0b1f3a;
   padding: 30px;
+  top: 80px;
   color: white;
+  position: sticky;
+  height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+
+.dashboard-layout {
+  display: flex;
+  align-items: flex-start; /* CRITICAL: Allows the sticky sidebar to work in flexbox */
+  /* Your other layout styles */
 }
 
 .sidebar button {
@@ -177,16 +207,37 @@ iframe {
   color: white;
   cursor: pointer;
   font-size: 16px;
+  position: relative;
 }
 
 .sidebar button:hover {
   background: #1f9c72;
 }
 
+/* Target the heading inside the sidebar */
+.sidebar h2 {
+  /* clamp(minimum, preferred viewport width, maximum) */
+  font-size: clamp(1.2rem, 2vw, 1.5rem); 
+  margin-bottom: 20px;
+}
+
+/* Target the buttons inside the sidebar */
+.sidebar button {
+  /* Scales the text smoothly between roughly 14px and 16px */
+  font-size: clamp(0.875rem, 1.5vw, 1rem); 
+  
+  /* Critical: Allows long button text like "Computational Neuroscience" 
+     to wrap to the next line instead of spilling out of the sidebar */
+  white-space: normal; 
+  line-height: 1.4; 
+  
+  /* Your existing button styles (padding, background, border, etc.) should stay here */
+}
 
 iframe {
   width: 100%;
-  height: 2600px;
+  /* Removed the fixed 3600px height */
+  min-height: 500px; /* Optional: provides a sensible default before JS loads */
   border: none;
   border-radius: 20px;
   background: white;
@@ -199,18 +250,7 @@ iframe {
 }
 
 
-.research-frame{
-    width:100%;
-    margin:40px 0;
-}
 
-.research-frame iframe{
-    width:100%;
-    border:none;
-    overflow:hidden;
-    border-radius:16px;
-    background:white;
-}
 
 .research-content,
 .plot-content {
@@ -511,13 +551,22 @@ section {
   resize: vertical;
   min-height: 140px;
 }
+.main-wrapper{
+    margin-left:280px;
+    width:calc(100% - 280px);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+}
 
 footer {
-  background: #071322;
-  color: white;
-  text-align: center;
-  padding: 30px;
-  margin-top: 50px;
+  margin-top: auto; /* Forces the footer to the bottom of its flex container */
+}
+
+.content{
+    flex:1;
+    padding:40px;
+    box-sizing:border-box;
 }
 
 .logo {
