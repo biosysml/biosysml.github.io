@@ -23,6 +23,7 @@
   </nav>
 </header>
 
+
 <div class="dashboard-layout">
 
   <aside class="sidebar">
@@ -53,18 +54,37 @@
     <div id="bifurcation" class="plot-content">
       <h1>Bifurcation Diagrams</h1>
 
-      <iframe src="plots/bifurcation"></iframe>
+      <iframe src="plots/bifurcation.html" scrolling="no"></iframe>
     </div>
 
     <div id="linearreg" class="plot-content">
       <h1>Linear and Nonlinear Regression</h1>
 
-      <iframe src="plots/linear-regression"></iframe>
+      <iframe src="plots/linear-regression.html" scrolling="no"></iframe>
     </div>
 
   </main>
 
 </div>
+
+<footer>
+  <p>© 2026 BioSysML Lab</p>
+</footer>
+
+<script src="js/plots.js"></script><script>
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'resize') {
+      const iframes = document.querySelectorAll('iframe');
+      iframes.forEach(iframe => {
+        if (iframe.contentWindow === e.source) {
+          // Exactly the height of the content, no extra buffer
+          iframe.style.height = e.data.height + 'px'; 
+        }
+      });
+    }
+  });
+</script>
+
 
 <script src="js/plots.js"></script>
 </body>
