@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ultimate Simulation Workspace & Engine</title>
+  
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #0b1f3a;
+      --secondary: #0c6c8f;
+      --accent: #1f9c72;
+      --bg-color: #f5f7fb;
+      --panel-bg: #ffffff;
+      --border-color: #d6dbe3;
+    }
+
+    * { box-sizing: border-box; font-family: Arial, sans-serif; }
+    
+    body {
+      margin: 0;
+      background-color: var(--bg-color);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      color: #333;
+    }
+
+    .sidebar {
+      width: 460px;
+      background: var(--panel-bg);
+      padding: 20px;
+      overflow-y: auto;
+      border-right: 1px solid var(--border-color);
+      box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+      flex-shrink: 0;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    .plot-container {
+      flex: 1;
+      background: var(--panel-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      padding: 10px;
+      border: 1px solid var(--border-color);
+    }
+
+    h2 { color: var(--primary); margin-top: 0; font-size: 1.4rem; border-bottom: 2px solid var(--secondary); padding-bottom: 10px; }
+    h3 { color: var(--secondary); font-size: 1.05rem; margin-bottom: 10px; margin-top: 20px; border-left: 3px solid var(--accent); padding-left: 8px; }
+
+    .form-group { margin-bottom: 12px; }
+    .checkbox-group { margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.85rem; color: #444; }
+    .checkbox-group label { display: inline; margin-bottom: 0; cursor: pointer; }
+    
+    input[type="text"], input[type="number"], select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 14px;
+      background: #fff;
+    }
+
+    input[type="color"] {
+      width: 100%;
+      height: 38px;
+      padding: 2px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .row { display: flex; gap: 10px; }
+    .row .form-group { flex: 1; }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 10px;
+    }
+    button:hover { background: #157a58; }
+
+    .export-btn { background: var(--secondary); margin-top: 6px; }
+    .export-btn:hover { background: #084c66; }
+
+    .eq-card { background: #f9fafc; padding: 12px; padding-top: 6px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <h2>Simulation Engine Workspace</h2>
+
+    <div class="form-group">
+      <label for="num-eqs">System Matrix Order</label>
+      <select id="num-eqs" onchange="handleSystemSizeChange()">
+        <option value="1">1 Equation (x)</option>
+        <option value="2" selected>2 Equations (x, y)</option>
+        <option value="3">3 Equations (x, y, z)</option>
+        <option value="4">4 Equations (x, y, z, w)</option>
+      </select>
+    </div>
+
+    <h3>1. System Vector Fields & Geometry</h3>
+    <div id="equations-container"></div>
+
+    <h3>2. Parameter Domain Constants</h3>
+    <div class="form-group">
+      <label>Global Parameters (comma separated)</label>
+      <input type="text" id="params" value="a=1.1, b=0.4, c=0.1, d=0.4">
+    </div>
+
+    <h3>3. Initial Coordinates Vector</h3>
+    <div id="initial-conditions-container" class="row"></div>
+
+    <h3>4. Time Space Integration Solver</h3>
+    <div class="row">
+      <div class="form-group">
+        <label>Stop Interval Time (t_max)</label>
+        <input type="number" id="t-max" value="100" step="any">
+      </div>
+      <div class="form-group">
+        <label>Integration Step (dt)</label>
+        <input type="number" id="dt" value="0.05" step="any">
+      </div>
+    </div>
+
+    <h3>5. Frame Headings & Axis Metadata</h3>
+    <div class="row">
+      <div class="form-group" style="flex: 2;">
+        <label>Plot Frame Title</label>
+        <input type="text" id="plot-title" value="System Trajectories Phase Space">
+      </div>
+      <div class="form-group" style="flex: 1;">
+        <label>Title Size (px)</label>
+        <input type="number" id="title-size" value="18" min="8" max="48">
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group" style="flex: 2;">
+        <label>X-Axis Label Description</label>
+        <input type="text" id="x-label" value="Time Dimension (t)">
+      </div>
+      <div class="form-group" style="flex: 1;">
+        <label>Label Size</label>
+        <input type="number" id="x-label-size" value="14" min="6" max="32">
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group" style="flex: 2;">
+        <label>Y-Axis Label Description</label>
+        <input type="text" id="y-label" value="State Response Dynamics">
+      </div>
+      <div class="form-group" style="flex: 1;">
+        <label>Label Size</label>
+        <input type="number" id="y-label-size" value="14" min="6" max="32">
+      </div>
+    </div>
+
+    <div class="checkbox-group">
+      <input type="checkbox" id="x-autorange" checked onchange="toggleLimitInputs()">
+      <label for="x-autorange">Automatic X Bounds Scaling</label>
+    </div>
+    <div class="row" id="x-limits-row" style="display: none;">
+      <div class="form-group">
+        <label>X Floor Limit</label>
+        <input type="number" id="x-min" value="0" step="any">
+      </div>
+      <div class="form-group">
+        <label>X Ceiling Limit</label>
+        <input type="number" id="x-max" value="100" step="any">
+      </div>
+    </div>
+
+    <div class="checkbox-group">
+      <input type="checkbox" id="y-autorange" checked onchange="toggleLimitInputs()">
+      <label for="y-autorange">Automatic Y Bounds Scaling</label>
+    </div>
+    <div class="row" id="y-limits-row" style="display: none;">
+      <div class="form-group">
+        <label>Y Floor Limit</label>
+        <input type="number" id="y-min" value="0" step="any">
+      </div>
+      <div class="form-group">
+        <label>Y Ceiling Limit</label>
+        <input type="number" id="y-max" value="50" step="any">
+      </div>
+    </div>
+
+    <h3>6. Environmental Backdrop & Scale Grids</h3>
+    <div class="row">
+      <div class="form-group">
+        <label>Inner Canvas Color</label>
+        <input type="color" id="bg-plot" value="#fcfcfc">
+      </div>
+      <div class="form-group">
+        <label>Outer Frame Color</label>
+        <input type="color" id="bg-paper" value="#ffffff">
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label>Tick Marks Size</label>
+        <input type="number" id="tick-size" value="12" min="6" max="32">
+      </div>
+      <div class="form-group">
+        <label>Tick Text Color</label>
+        <input type="color" id="tick-color" value="#444444">
+      </div>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="show-grid" checked>
+      <label for="show-grid">Display Structural Coordinate Grid</label>
+    </div>
+
+    <button onclick="solveAndPlot()">Run Calculation Vector</button>
+
+    <h3>7. High-Fidelity Export Matrix</h3>
+    <div class="row">
+      <div class="form-group">
+        <label>Target Export Encoding</label>
+        <select id="export-format">
+          <option value="png">PNG Standard Presentation Graphics</option>
+          <option value="jpeg">JPEG Standard Compressed Layout</option>
+          <option value="svg">SVG Lossless Scalable Vector Asset</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label>Resolution Width (px)</label>
+        <input type="number" id="img-w" value="1920">
+      </div>
+      <div class="form-group">
+        <label>Resolution Height (px)</label>
+        <input type="number" id="img-h" value="1080">
+      </div>
+    </div>
+    <button class="export-btn" onclick="exportImage()">Download Render File</button>
+    <button class="export-btn" onclick="exportData()">Download Compiled Log Data</button>
+  </div>
+
+  <div class="main-content">
+    <div id="plot" class="plot-container"></div>
+  </div>
+
+  <script>
+    const variableNames = ['x', 'y', 'z', 'w'];
+    let globalData = []; 
+    let currentNumEqs = 2;
+
+    const presets = {
+      1: { eq: ["r*x*(1 - x/K)"], styles: ["solid"], widths: [2.5], params: "r=0.3, K=100", init: [10] },
+      2: { eq: ["a*x - b*x*y", "c*x*y - d*y"], styles: ["solid", "dash"], widths: [2.5, 2.5], params: "a=1.1, b=0.4, c=0.1, d=0.4", init: [10, 10] },
+      3: { eq: ["sigma*(y - x)", "x*(rho - z) - y", "x*y - beta*z"], styles: ["solid", "dash", "dot"], widths: [2.5, 2.5, 2.5], params: "sigma=10, rho=28, beta=2.666", init: [1.0, 1.0, 1.0] },
+      4: { eq: ["-x + a*y", "-y + b*z", "-z + c*w", "-0.1*w"], styles: ["solid", "dash", "dot", "dashdot"], widths: [2.5, 2.5, 2.5, 2.5], params: "a=0.5, b=0.4, c=0.3", init: [50, 40, 30, 20] }
+    };
+
+    function handleSystemSizeChange() {
+      currentNumEqs = parseInt(document.getElementById('num-eqs').value);
+      renderDynamicFields(currentNumEqs);
+      loadPreset(currentNumEqs);
+      solveAndPlot();
+    }
+
+    function toggleLimitInputs() {
+      document.getElementById('x-limits-row').style.display = document.getElementById('x-autorange').checked ? 'none' : 'flex';
+      document.getElementById('y-limits-row').style.display = document.getElementById('y-autorange').checked ? 'none' : 'flex';
+    }
+
+    function renderDynamicFields(num) {
+      const eqContainer = document.getElementById('equations-container');
+      const initContainer = document.getElementById('initial-conditions-container');
+      
+      eqContainer.innerHTML = '';
+      initContainer.innerHTML = '';
+
+      for (let i = 0; i < num; i++) {
+        const v = variableNames[i];
+        
+        const card = document.createElement('div');
+        card.className = 'eq-card';
+        card.innerHTML = `
+          <label style="color:var(--secondary); font-size:0.9rem; margin-bottom:6px;">Variable Channel: ${v}(t)</label>
+          <div class="form-group" style="margin-bottom:6px;">
+            <label>Field Rate Derivative Expression (d${v}/dt):</label>
+            <input type="text" id="eq-${v}" value="">
+          </div>
+          <div class="row">
+            <div class="form-group" style="margin-bottom:0;">
+              <label>Dash Style</label>
+              <select id="style-${v}">
+                <option value="solid">━━━━ Solid</option>
+                <option value="dash">---- Dashed</option>
+                <option value="dot">•••• Dotted</option>
+                <option value="dashdot">-•-•- Dash-Dot</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label>Width (px)</label>
+              <input type="number" id="width-${v}" value="2.5" min="0.5" max="10" step="0.5">
+            </div>
+          </div>
+        `;
+        eqContainer.appendChild(card);
+
+        const initDiv = document.createElement('div');
+        initDiv.className = 'form-group';
+        initDiv.innerHTML = `<label>${v}(0)</label><input type="number" id="init-${v}" value="0" step="any">`;
+        initContainer.appendChild(initDiv);
+      }
+    }
+
+    function loadPreset(num) {
+      const preset = presets[num];
+      document.getElementById('params').value = preset.params;
+      for (let i = 0; i < num; i++) {
+        const v = variableNames[i];
+        document.getElementById(`eq-${v}`).value = preset.eq[i];
+        document.getElementById(`style-${v}`).value = preset.styles[i] || "solid";
+        document.getElementById(`width-${v}`).value = preset.widths[i] || 2.5;
+        document.getElementById(`init-${v}`).value = preset.init[i];
+      }
+    }
+
+    function parseParams(paramStr) {
+      const params = {};
+      if (!paramStr.trim()) return params;
+      paramStr.split(',').forEach(pair => {
+        const [key, val] = pair.split('=');
+        if (key && val) params[key.trim()] = parseFloat(val.trim());
+      });
+      return params;
+    }
+
+    function solveAndPlot() {
+      try {
+        const params = parseParams(document.getElementById('params').value);
+        const tMax = parseFloat(document.getElementById('t-max').value);
+        const dt = parseFloat(document.getElementById('dt').value);
+        
+        const titleText = document.getElementById('plot-title').value;
+        const titleSize = parseInt(document.getElementById('title-size').value);
+        const xLabel = document.getElementById('x-label').value;
+        const xLabelSize = parseInt(document.getElementById('x-label-size').value);
+        const yLabel = document.getElementById('y-label').value;
+        const yLabelSize = parseInt(document.getElementById('y-label-size').value);
+        
+        const tickSize = parseInt(document.getElementById('tick-size').value);
+        const tickColor = document.getElementById('tick-color').value;
+        const showGrid = document.getElementById('show-grid').checked;
+        const bgPlot = document.getElementById('bg-plot').value;
+        const bgPaper = document.getElementById('bg-paper').value;
+
+        const activeVars = variableNames.slice(0, currentNumEqs);
+        const compiledEqs = {};
+        let currentValues = {};
+
+        activeVars.forEach(v => {
+          compiledEqs[v] = math.compile(document.getElementById(`eq-${v}`).value.trim());
+          currentValues[v] = parseFloat(document.getElementById(`init-${v}`).value);
+        });
+
+        const history = {};
+        activeVars.forEach(v => history[v] = []);
+        const tArr = [];
+        globalData = [];
+
+        let t = 0;
+
+        function getDerivatives(currT, valuesObj) {
+          const scope = { ...params, t: currT, ...valuesObj };
+          const derivatives = {};
+          activeVars.forEach(v => {
+            derivatives[v] = compiledEqs[v].evaluate(scope);
+          });
+          return derivatives;
+        }
+
+        // Numerical Integration Runge-Kutta 4 Engine Loop
+        while (t <= tMax) {
+          tArr.push(t);
+          const dataSnapshot = { t };
+          activeVars.forEach(v => {
+            history[v].push(currentValues[v]);
+            dataSnapshot[v] = currentValues[v];
+          });
+          globalData.push(dataSnapshot);
+
+          const k1 = getDerivatives(t, currentValues);
+          const v2 = {}; activeVars.forEach(v => v2[v] = currentValues[v] + k1[v] * dt / 2);
+          const k2 = getDerivatives(t + dt / 2, v2);
+          const v3 = {}; activeVars.forEach(v => v3[v] = currentValues[v] + k2[v] * dt / 2);
+          const k3 = getDerivatives(t + dt / 2, v3);
+          const v4 = {}; activeVars.forEach(v => v4[v] = currentValues[v] + k3[v] * dt);
+          const k4 = getDerivatives(t + dt, v4);
+
+          activeVars.forEach(v => {
+            currentValues[v] += (dt / 6) * (k1[v] + 2 * k2[v] + 2 * k3[v] + k4[v]);
+          });
+          t += dt;
+        }
+
+        // Construct Plot Traces
+        const traces = activeVars.map(v => {
+          const lineStyle = document.getElementById(`style-${v}`).value;
+          const lineWidth = parseFloat(document.getElementById(`width-${v}`).value);
+          return {
+            x: tArr,
+            y: history[v],
+            mode: 'lines',
+            name: `${v}(t)`,
+            line: { 
+              width: lineWidth,
+              dash: lineStyle === 'solid' ? '' : lineStyle 
+            }
+          };
+        });
+
+        const xAuto = document.getElementById('x-autorange').checked;
+        const yAuto = document.getElementById('y-autorange').checked;
+
+        const layout = {
+          title: { text: titleText, font: { size: titleSize, color: '#0b1f3a' } },
+          xaxis: { 
+            title: { text: xLabel, font: { size: xLabelSize, color: '#333' } },
+            autorange: xAuto,
+            range: xAuto ? undefined : [parseFloat(document.getElementById('x-min').value), parseFloat(document.getElementById('x-max').value)],
+            tickfont: { size: tickSize, color: tickColor },
+            tickcolor: tickColor,
+            showgrid: showGrid,
+            gridcolor: '#e2e8f0',
+            automargin: true 
+          },
+          yaxis: { 
+            title: { text: yLabel, font: { size: yLabelSize, color: '#333' } },
+            autorange: yAuto,
+            range: yAuto ? undefined : [parseFloat(document.getElementById('y-min').value), parseFloat(document.getElementById('y-max').value)],
+            tickfont: { size: tickSize, color: tickColor },
+            tickcolor: tickColor,
+            showgrid: showGrid,
+            gridcolor: '#e2e8f0',
+            automargin: true 
+          },
+          autosize: true,
+          margin: { l: 80, r: 40, t: 70, b: 80 },
+          plot_bgcolor: bgPlot,
+          paper_bgcolor: bgPaper
+        };
+
+        Plotly.newPlot('plot', traces, layout, { responsive: true, displaylogo: false });
+
+      } catch (err) {
+        alert("Processing Matrix Logic Exception. Review mathematical expressions.\n\nDetails: " + err.message);
+      }
+    }
+
+    function exportImage() {
+      const width = parseInt(document.getElementById('img-w').value);
+      const height = parseInt(document.getElementById('img-h').value);
+      const format = document.getElementById('export-format').value;
+      
+      const titleText = document.getElementById('plot-title').value;
+      const titleSize = parseInt(document.getElementById('title-size').value);
+      const xLabel = document.getElementById('x-label').value;
+      const xLabelSize = parseInt(document.getElementById('x-label-size').value);
+      const yLabel = document.getElementById('y-label').value;
+      const yLabelSize = parseInt(document.getElementById('y-label-size').value);
+      
+      const tickSize = parseInt(document.getElementById('tick-size').value);
+      const tickColor = document.getElementById('tick-color').value;
+      const showGrid = document.getElementById('show-grid').checked;
+      const bgPlot = document.getElementById('bg-plot').value;
+      const bgPaper = document.getElementById('bg-paper').value;
+
+      const xAuto = document.getElementById('x-autorange').checked;
+      const yAuto = document.getElementById('y-autorange').checked;
+
+      // Scaling scale multipliers relative to high resolution requested widths
+      const scaleFactor = width / 1000;
+
+      const exportOptions = {
+        format: format,
+        width: width,
+        height: height,
+        filename: 'ode_highres_production_render',
+        imageDataOnly: false,
+        layout: {
+          margin: { l: Math.max(90, width * 0.08), r: 50, t: Math.max(90, height * 0.09), b: Math.max(90, height * 0.1) },
+          plot_bgcolor: bgPlot,
+          paper_bgcolor: bgPaper,
+          title: {
+            text: titleText,
+            font: { size: titleSize * scaleFactor }
+          },
+          xaxis: {
+            title: { text: xLabel, font: { size: xLabelSize * scaleFactor } },
+            tickfont: { size: tickSize * scaleFactor, color: tickColor },
+            tickcolor: tickColor,
+            showgrid: showGrid,
+            gridcolor: '#e2e8f0',
+            autorange: xAuto,
+            range: xAuto ? undefined : [parseFloat(document.getElementById('x-min').value), parseFloat(document.getElementById('x-max').value)]
+          },
+          yaxis: {
+            title: { text: yLabel, font: { size: yLabelSize * scaleFactor } },
+            tickfont: { size: tickSize * scaleFactor, color: tickColor },
+            tickcolor: tickColor,
+            showgrid: showGrid,
+            gridcolor: '#e2e8f0',
+            autorange: yAuto,
+            range: yAuto ? undefined : [parseFloat(document.getElementById('y-min').value), parseFloat(document.getElementById('y-max').value)]
+          },
+          legend: {
+            font: { size: 12 * scaleFactor }
+          }
+        }
+      };
+
+      Plotly.downloadImage('plot', exportOptions);
+    }
+
+    function exportData() {
+      if (globalData.length === 0) return alert("Execute execution runtime framework first.");
+      
+      const activeVars = variableNames.slice(0, currentNumEqs);
+      let csvContent = "data:text/csv;charset=utf-8,t," + activeVars.join(",") + "\n";
+
+      globalData.forEach(row => {
+        let line = row.t.toFixed(4);
+        activeVars.forEach(v => {
+          line += "," + row[v].toFixed(6);
+        });
+        csvContent += line + "\n";
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "ode_trajectory_numerical_log.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    window.onload = () => {
+      renderDynamicFields(2);
+      loadPreset(2);
+      solveAndPlot();
+    };
+  </script>
+
+  
+<script>
+  function sendHeightToParent() {
+    // Calculate total height of this document
+    const height = document.documentElement.scrollHeight;
+    // Send the height to the parent window
+    window.parent.postMessage({ type: 'resize', height: height }, '*');
+  }
+
+  // Send height when the page loads
+  window.addEventListener('load', sendHeightToParent);
+  
+  // Re-calculate if the window is resized
+  window.addEventListener('resize', sendHeightToParent);
+</script>
+
+
+</body>
+</html>
