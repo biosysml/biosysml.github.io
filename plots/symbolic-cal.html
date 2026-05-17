@@ -58,9 +58,10 @@
       box-shadow: 0 4px 15px rgba(0,0,0,0.05);
       padding: 20px;
       border: 1px solid var(--border-color);
+      overflow: hidden;
     }
 
-    .plot-container { flex: 1; min-height: 400px; padding: 10px; }
+    .plot-container { flex: 1; min-height: 400px; padding: 20px; }
 
     h2 { color: var(--primary); margin-top: 0; font-size: 1.4rem; border-bottom: 2px solid var(--secondary); padding-bottom: 10px; }
     h3 { color: var(--secondary); font-size: 1.05rem; margin-bottom: 10px; margin-top: 20px; border-left: 3px solid var(--accent); padding-left: 8px; }
@@ -131,6 +132,10 @@
       margin-bottom: 10px;
     }
 
+   .js-plotly-plot .plotly .modebar {
+    left: 10px !important;
+    right: auto !important;
+}
     .disclaimer {
       background-color: #fff3f3;
       border-left: 4px solid #e74c3c;
@@ -314,8 +319,15 @@
     }
 
     // Helper to generate Legend layout object dynamically
+    // Helper to generate Legend layout object dynamically
     function getLegendConfig(pos, size, color) {
-      const config = { font: { size: size, color: color }, bgcolor: 'rgba(255,255,255,0.85)', bordercolor: '#d6dbe3', borderwidth: 1 };
+      // Set bgcolor and bordercolor to transparent, and borderwidth to 0
+      const config = { 
+        font: { size: size, color: color }, 
+        bgcolor: 'transparent', 
+        bordercolor: 'transparent', 
+        borderwidth: 0 
+      };
       switch (pos) {
         case 'outside-bottom':
           config.orientation = 'h'; config.yanchor = 'top'; config.y = -0.2; config.xanchor = 'center'; config.x = 0.5;
@@ -578,6 +590,6 @@
   // Re-calculate if the window is resized
   window.addEventListener('resize', sendHeightToParent);
 </script>
-
+<script src="../js/Plotly.js"></script>
 </body>
 </html>
