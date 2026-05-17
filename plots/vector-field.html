@@ -631,6 +631,20 @@
         buildSliders();
     });
 </script>
+<script>
+  function sendHeightToParent() {
+    // Calculate total height of this document
+    const height = document.documentElement.scrollHeight;
+    // Send the height to the parent window
+    window.parent.postMessage({ type: 'resize', height: height }, '*');
+  }
+
+  // Send height when the page loads
+  window.addEventListener('load', sendHeightToParent);
+  
+  // Re-calculate if the window is resized
+  window.addEventListener('resize', sendHeightToParent);
+</script>
 </body>
 </html>
         
