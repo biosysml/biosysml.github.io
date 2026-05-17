@@ -396,7 +396,7 @@
     function getLegendConfig(pos, size, color) {
       const config = { font: { size: size, color: color }, bgcolor: 'rgba(255,255,255,0.7)', bordercolor: '#d6dbe3', borderwidth: 1 };
       switch (pos) {
-        case 'outside-bottom':
+       case 'outside-bottom':
           config.orientation = 'h'; config.yanchor = 'top'; config.y = -0.2; config.xanchor = 'center'; config.x = 0.5;
           break;
         case 'top-right':
@@ -413,8 +413,7 @@
           break;
         case 'outside-right':
         default:
-          // Plotly's default outside legend
-          config.yanchor = 'auto'; config.y = 'auto'; config.xanchor = 'auto'; config.x = 1.05;
+          config.yanchor = 'top'; config.y = 1; config.xanchor = 'left'; config.x = 1.02;
           break;
       }
       return config;
