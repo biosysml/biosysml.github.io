@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Symbolic Calculus Engine Workspace</title>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/nerdamer.core.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Algebra.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Calculus.js"></script>
+
+  <style>
+    :root {
+      --primary: #0b1f3a;
+      --secondary: #0c6c8f;
+      --accent: #1f9c72;
+      --bg-color: #f5f7fb;
+      --panel-bg: #ffffff;
+      --border-color: #d6dbe3;
+    }
+
+    * { box-sizing: border-box; font-family: Arial, sans-serif; }
+    
+    body {
+      margin: 0;
+      background-color: var(--bg-color);
+      display: flex;
+      height: 1000px;
+      overflow: hidden;
+      color: #333;
+    }
+
+    .sidebar {
+      width: 460px;
+      background: var(--panel-bg);
+      padding: 20px;
+      overflow-y: auto;
+      border-right: 1px solid var(--border-color);
+      box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+      flex-shrink: 0;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      gap: 20px;
+      overflow-y: auto;
+    }
+
+    .panel {
+      background: var(--panel-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      padding: 20px;
+      border: 1px solid var(--border-color);
+    }
+
+    .plot-container { flex: 1; min-height: 400px; padding: 10px; }
+
+    h2 { color: var(--primary); margin-top: 0; font-size: 1.4rem; border-bottom: 2px solid var(--secondary); padding-bottom: 10px; }
+    h3 { color: var(--secondary); font-size: 1.05rem; margin-bottom: 10px; margin-top: 20px; border-left: 3px solid var(--accent); padding-left: 8px; }
+
+    .form-group { margin-bottom: 12px; }
+    label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.85rem; color: #444; }
+    
+    input[type="text"], input[type="number"], select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 14px;
+      background: #fff;
+    }
+
+    input[type="color"] {
+      width: 100%;
+      height: 38px;
+      padding: 2px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .row { display: flex; gap: 10px; }
+    .row .form-group { flex: 1; }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 10px;
+    }
+    button:hover { background: #157a58; }
+
+    .export-btn { background: var(--secondary); margin-top: 6px; }
+    .export-btn:hover { background: #084c66; }
+
+    .latex-output {
+      font-size: 1.2rem;
+      padding: 15px;
+      background: #f9fafc;
+      border: 1px dashed #ccc;
+      border-radius: 8px;
+      overflow-x: auto;
+      text-align: center;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--secondary);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      margin-bottom: 10px;
+    }
+
+    .disclaimer {
+      background-color: #fff3f3;
+      border-left: 4px solid #e74c3c;
+      padding: 12px;
+      margin-top: 25px;
+      font-size: 0.85rem;
+      color: #c0392b;
+      border-radius: 4px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <h2>Symbolic Calculus Engine</h2>
+
+    <h3>1. Input Expression</h3>
+    <div class="form-group">
+      <label>Mathematical Function, f(x)</label>
+      <input type="text" id="func-input" value="x^2 * sin(x)">
+      <small style="color: #666; font-size: 0.75rem;">Syntax: x^3, cos(x), exp(x), log(x)</small>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>Variable</label>
+        <input type="text" id="var-input" value="x">
+      </div>
+      <div class="form-group">
+        <label>Operation</label>
+        <select id="operation" onchange="toggleBounds()">
+          <option value="diff1">1st Derivative (d/dx)</option>
+          <option value="diff2">2nd Derivative (d²/dx²)</option>
+          <option value="int">Indefinite Integral (∫)</option>
+          <option value="defint">Definite Integral</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row" id="bounds-row" style="display: none;">
+      <div class="form-group">
+        <label>Lower Bound (a)</label>
+        <input type="text" id="lower-bound" value="0">
+      </div>
+      <div class="form-group">
+        <label>Upper Bound (b)</label>
+        <input type="text" id="upper-bound" value="pi">
+      </div>
+    </div>
+
+    <h3>2. Plot Visualization Bounds</h3>
+    <div class="row">
+      <div class="form-group">
+        <label>X Min</label>
+        <input type="number" id="plot-min" value="-10">
+      </div>
+      <div class="form-group">
+        <label>X Max</label>
+        <input type="number" id="plot-max" value="10">
+      </div>
+    </div>
+
+    <h3>3. Frame Typography & Styling</h3>
+    <span style="display:block; margin-bottom:10px; color:#555; font-size: 0.85rem;">
+      <em>Note: Wrap text in <code>$ ... $</code> for LaTeX formatting.</em>
+    </span>
+    
+    <div class="row">
+      <div class="form-group" style="flex: 2;">
+        <label>Plot Title</label>
+        <input type="text" id="plot-title" value="$\text{Symbolic Calculus Visualization}$">
+      </div>
+      <div class="form-group" style="flex: 1;">
+        <label>Title Size</label>
+        <input type="number" id="title-size" value="18" min="8" max="48">
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="form-group" style="flex: 2;">
+        <label>X-Axis Label</label>
+        <input type="text" id="x-label" value="$x$">
+      </div>
+      <div class="form-group" style="flex: 1;">
+        <label>Label Size</label>
+        <input type="number" id="x-label-size" value="14" min="6" max="32">
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="form-group" style="flex: 2;">
+        <label>Y-Axis Label</label>
+        <input type="text" id="y-label" value="$f(x)$">
+      </div>
+      <div class="form-group" style="flex: 1;">
+        <label>Label Size</label>
+        <input type="number" id="y-label-size" value="14" min="6" max="32">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>Legend Font Size</label>
+        <input type="number" id="legend-size" value="12" min="6" max="32">
+      </div>
+      <div class="form-group">
+        <label>Legend Position</label>
+        <select id="legend-pos">
+          <option value="outside-right">Outside Right</option>
+          <option value="outside-bottom">Outside Bottom</option>
+          <option value="top-right" selected>Inside Top Right</option>
+          <option value="top-left">Inside Top Left</option>
+          <option value="bottom-right">Inside Bottom Right</option>
+          <option value="bottom-left">Inside Bottom Left</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>Tick Marks Size</label>
+        <input type="number" id="tick-size" value="12" min="6" max="32">
+      </div>
+      <div class="form-group">
+        <label>Tick Text Color</label>
+        <input type="color" id="tick-color" value="#444444">
+      </div>
+    </div>
+
+    <button onclick="computeSymbolic()">Compute & Plot Solution</button>
+
+    <h3>4. High-Fidelity Export Options</h3>
+    <div class="row">
+      <div class="form-group">
+        <label>Export Format</label>
+        <select id="export-format">
+          <option value="png">PNG Standard</option>
+          <option value="jpeg">JPEG Compressed</option>
+          <option value="svg">SVG Vector</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label>Resolution Width (px)</label>
+        <input type="number" id="img-w" value="1920">
+      </div>
+      <div class="form-group">
+        <label>Resolution Height (px)</label>
+        <input type="number" id="img-h" value="1080">
+      </div>
+    </div>
+    <button class="export-btn" onclick="exportImage()">Download Render File</button>
+    <button class="export-btn" onclick="exportData()">Download Data (CSV)</button>
+
+    <div class="disclaimer">
+      <strong>⚠️ Disclaimer:</strong> This engine uses a lightweight, client-side JavaScript computer algebra system (Nerdamer). While capable of handling most standard mathematical operations, complex symbolic integration or differentiation expressions may yield unsimplified, approximate, or limited results. Always verify critical analytical derivations mathematically.
+    </div>
+  </div>
+
+  <div class="main-content">
+    
+    <div class="panel">
+      <div class="badge">Original Function</div>
+      <div id="original-latex" class="latex-output">$$ f(x) = \text{Awaiting input...} $$</div>
+      
+      <div class="badge" style="background: var(--accent); margin-top: 15px;">Computed Result</div>
+      <div id="result-latex" class="latex-output" style="background: #eef9f5; border-color: #1f9c72;">$$ \text{Result will appear here} $$</div>
+    </div>
+
+    <div id="plot" class="panel plot-container"></div>
+  </div>
+
+  <script>
+    let globalPlotData = []; // Store coordinates for CSV export
+
+    function toggleBounds() {
+      const op = document.getElementById('operation').value;
+      document.getElementById('bounds-row').style.display = (op === 'defint') ? 'flex' : 'none';
+    }
+
+    // Helper to generate Legend layout object dynamically
+    function getLegendConfig(pos, size, color) {
+      const config = { font: { size: size, color: color }, bgcolor: 'rgba(255,255,255,0.85)', bordercolor: '#d6dbe3', borderwidth: 1 };
+      switch (pos) {
+        case 'outside-bottom':
+          config.orientation = 'h'; config.yanchor = 'top'; config.y = -0.2; config.xanchor = 'center'; config.x = 0.5;
+          break;
+        case 'top-right':
+          config.yanchor = 'top'; config.y = 0.99; config.xanchor = 'right'; config.x = 0.99;
+          break;
+        case 'top-left':
+          config.yanchor = 'top'; config.y = 0.99; config.xanchor = 'left'; config.x = 0.01;
+          break;
+        case 'bottom-right':
+          config.yanchor = 'bottom'; config.y = 0.01; config.xanchor = 'right'; config.x = 0.99;
+          break;
+        case 'bottom-left':
+          config.yanchor = 'bottom'; config.y = 0.01; config.xanchor = 'left'; config.x = 0.01;
+          break;
+        case 'outside-right':
+        default:
+          config.yanchor = 'top'; config.y = 1; config.xanchor = 'left'; config.x = 1.02;
+          break;
+      }
+      return config;
+    }
+
+    function computeSymbolic() {
+      const funcStr = document.getElementById('func-input').value.trim();
+      const variable = document.getElementById('var-input').value.trim();
+      const op = document.getElementById('operation').value;
+      
+      const plotMin = parseFloat(document.getElementById('plot-min').value);
+      const plotMax = parseFloat(document.getElementById('plot-max').value);
+
+      const latexOrig = document.getElementById('original-latex');
+      const latexRes = document.getElementById('result-latex');
+
+      try {
+        // 1. Process Original Function
+        const parsedFunc = nerdamer(funcStr);
+        latexOrig.innerHTML = `$$ f(${variable}) = ${nerdamer(funcStr).toTeX()} $$`;
+
+        let resultExpr;
+        let resultStr = "";
+        let resultTeX = "";
+        let isDefinite = false;
+
+        // 2. Perform Symbolic Calculus Operations
+        if (op === 'diff1') {
+          resultExpr = nerdamer(`diff(${funcStr}, ${variable})`);
+          resultStr = resultExpr.toString();
+          resultTeX = `\\frac{d}{d${variable}} f(${variable}) = ${resultExpr.toTeX()}`;
+        
+        } else if (op === 'diff2') {
+          resultExpr = nerdamer(`diff(${funcStr}, ${variable}, 2)`);
+          resultStr = resultExpr.toString();
+          resultTeX = `\\frac{d^2}{d${variable}^2} f(${variable}) = ${resultExpr.toTeX()}`;
+        
+        } else if (op === 'int') {
+          resultExpr = nerdamer(`integrate(${funcStr}, ${variable})`);
+          resultStr = resultExpr.toString();
+          resultTeX = `\\int f(${variable}) d${variable} = ${resultExpr.toTeX()} + C`;
+        
+        } else if (op === 'defint') {
+          isDefinite = true;
+          const a = document.getElementById('lower-bound').value;
+          const b = document.getElementById('upper-bound').value;
+          
+          const integral = nerdamer(`integrate(${funcStr}, ${variable})`);
+          const evalB = nerdamer(integral.text(), { [variable]: b });
+          const evalA = nerdamer(integral.text(), { [variable]: a });
+          
+          resultExpr = nerdamer(`${evalB.text()} - (${evalA.text()})`).evaluate();
+          resultStr = resultExpr.text();
+          
+          const aTeX = nerdamer(a).toTeX();
+          const bTeX = nerdamer(b).toTeX();
+          resultTeX = `\\int_{${aTeX}}^{${bTeX}} f(${variable}) d${variable} = ${resultExpr.toTeX()}`;
+        }
+
+        latexRes.innerHTML = `$$ ${resultTeX} $$`;
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub, "original-latex"]);
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub, "result-latex"]);
+
+        // 3. Generate Graph
+        generatePlot(funcStr, resultStr, variable, plotMin, plotMax, isDefinite);
+
+      } catch (err) {
+        latexRes.innerHTML = `$$ \\text{Error parsing mathematical expression. Check syntax constraints.} $$`;
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub, "result-latex"]);
+        console.error(err);
+      }
+    }
+
+    function generatePlot(fStr, gStr, variable, min, max, isDefinite) {
+      // Build ultra-fast JavaScript functions
+      const f = nerdamer(fStr).buildFunction([variable]);
+      let g = null;
+      if (!isDefinite) {
+        g = nerdamer(gStr).buildFunction([variable]);
+      }
+
+      globalPlotData = []; // reset data
+      const xArr = [], fArr = [], gArr = [];
+      const steps = 300;
+      const stepSize = (max - min) / steps;
+
+      for (let i = 0; i <= steps; i++) {
+        const x = min + i * stepSize;
+        let fVal = null, gVal = null;
+        
+        try { fVal = f(x); } catch(e) {}
+        if (!isDefinite) {
+          try { gVal = g(x); } catch(e) {}
+        }
+
+        xArr.push(x);
+        fArr.push(fVal);
+        gArr.push(gVal);
+        
+        globalPlotData.push({ x: x, f: fVal, g: gVal });
+      }
+
+      const traces = [{
+        x: xArr, y: fArr,
+        mode: 'lines',
+        name: `$f(${variable})$`,
+        line: { color: '#0b1f3a', width: 3 }
+      }];
+
+      if (!isDefinite) {
+        traces.push({
+          x: xArr, y: gArr,
+          mode: 'lines',
+          name: `$\\text{Computed Result}$`,
+          line: { color: '#1f9c72', width: 3, dash: 'dash' }
+        });
+      }
+
+      // Read layout settings from UI
+      const titleText = document.getElementById('plot-title').value;
+      const titleSize = parseInt(document.getElementById('title-size').value);
+      const xLabel = document.getElementById('x-label').value;
+      const xLabelSize = parseInt(document.getElementById('x-label-size').value);
+      const yLabel = document.getElementById('y-label').value;
+      const yLabelSize = parseInt(document.getElementById('y-label-size').value);
+      
+      const tickSize = parseInt(document.getElementById('tick-size').value);
+      const tickColor = document.getElementById('tick-color').value;
+      const legendSize = parseInt(document.getElementById('legend-size').value);
+      const legendPos = document.getElementById('legend-pos').value;
+
+      const layout = {
+        title: { text: titleText, font: { size: titleSize, color: '#0b1f3a' } },
+        xaxis: { 
+          title: { text: xLabel, font: { size: xLabelSize, color: '#333' } },
+          zeroline: true,
+          tickfont: { size: tickSize, color: tickColor },
+          tickcolor: tickColor
+        },
+        yaxis: { 
+          title: { text: yLabel, font: { size: yLabelSize, color: '#333' } },
+          zeroline: true,
+          tickfont: { size: tickSize, color: tickColor },
+          tickcolor: tickColor
+        },
+        legend: getLegendConfig(legendPos, legendSize, tickColor),
+        // Increased the right margin (r) from 40 to 150 to ensure outside legends are not clipped
+        margin: { l: 60, r: 150, t: 70, b: 60 },
+        plot_bgcolor: '#fcfcfc',
+        paper_bgcolor: '#ffffff'
+      };
+
+      Plotly.newPlot('plot', traces, layout, { responsive: true, displaylogo: false });
+    }
+
+    function exportImage() {
+      const width = parseInt(document.getElementById('img-w').value);
+      const height = parseInt(document.getElementById('img-h').value);
+      const format = document.getElementById('export-format').value;
+      
+      const titleText = document.getElementById('plot-title').value;
+      const titleSize = parseInt(document.getElementById('title-size').value);
+      const xLabel = document.getElementById('x-label').value;
+      const xLabelSize = parseInt(document.getElementById('x-label-size').value);
+      const yLabel = document.getElementById('y-label').value;
+      const yLabelSize = parseInt(document.getElementById('y-label-size').value);
+      
+      const tickSize = parseInt(document.getElementById('tick-size').value);
+      const tickColor = document.getElementById('tick-color').value;
+      const legendSize = parseInt(document.getElementById('legend-size').value);
+      const legendPos = document.getElementById('legend-pos').value;
+
+      const scaleFactor = width / 1000;
+
+      const exportOptions = {
+        format: format,
+        width: width,
+        height: height,
+        filename: 'symbolic_calculus_render',
+        imageDataOnly: false,
+        layout: {
+          // Increased right margin (r: 150) so high-res exports don't cut off the legend
+          margin: { l: Math.max(80, width * 0.08), r: 150, t: Math.max(90, height * 0.09), b: Math.max(80, height * 0.08) },
+          plot_bgcolor: '#fcfcfc',
+          paper_bgcolor: '#ffffff',
+          title: { text: titleText, font: { size: titleSize * scaleFactor } },
+          xaxis: {
+            title: { text: xLabel, font: { size: xLabelSize * scaleFactor } },
+            tickfont: { size: tickSize * scaleFactor, color: tickColor },
+            tickcolor: tickColor
+          },
+          yaxis: {
+            title: { text: yLabel, font: { size: yLabelSize * scaleFactor } },
+            tickfont: { size: tickSize * scaleFactor, color: tickColor },
+            tickcolor: tickColor
+          },
+          legend: getLegendConfig(legendPos, legendSize * scaleFactor, tickColor)
+        }
+      };
+
+      Plotly.downloadImage('plot', exportOptions);
+    }
+
+    function exportData() {
+      if (globalPlotData.length === 0) return alert("Please compute a solution first.");
+      
+      const variable = document.getElementById('var-input').value.trim();
+      let csvContent = `data:text/csv;charset=utf-8,${variable},f(${variable}),Computed_Result\n`;
+
+      globalPlotData.forEach(row => {
+        const xVal = row.x !== null ? row.x.toFixed(6) : "";
+        const fVal = row.f !== null ? row.f.toFixed(6) : "";
+        const gVal = row.g !== null ? row.g.toFixed(6) : "";
+        csvContent += `${xVal},${fVal},${gVal}\n`;
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "symbolic_calculus_data.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Run default computation on load
+    window.onload = computeSymbolic;
+  </script>
+
+  <script>
+  function sendHeightToParent() {
+    // Calculate total height of this document
+    const height = document.documentElement.scrollHeight;
+    // Send the height to the parent window
+    window.parent.postMessage({ type: 'resize', height: height }, '*');
+  }
+
+  // Send height when the page loads
+  window.addEventListener('load', sendHeightToParent);
+  
+  // Re-calculate if the window is resized
+  window.addEventListener('resize', sendHeightToParent);
+</script>
+
+</body>
+</html>
