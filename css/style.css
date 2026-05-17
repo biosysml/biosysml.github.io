@@ -287,16 +287,13 @@ iframe {
   margin-top: 40px;
 }
 
+
 .team-grid {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap; /* Changed from nowrap to wrap */
   justify-content: center;
   gap: 30px;
-  overflow-x: auto;
-  padding-bottom: 10px;
-  padding-top: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding: 10px;
 }
 
 .member-card {
@@ -309,7 +306,8 @@ iframe {
 }
 
 .member-card img {
-  width: 320px;
+  width: 100%; /* Allows the image to fill the card */
+  max-width: 320px; /* Keeps the original maximum size */
   height: 520px;
   object-fit: cover;
 }
