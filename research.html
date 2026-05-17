@@ -39,7 +39,6 @@
       Computational Neuroscience
     </button>
 
-    
     <button onclick="showResearch('ml')">
       Scientific Machine Learning
     </button>
@@ -52,30 +51,19 @@
   <main class="content-panel">
 
     <div id="ecology" class="research-content active-content">
-      <div class="research-frame">
-        <iframe src="res/ecological-dynamics.html" scrolling="no" frameborder="0" onload="resizeIframe(this)></iframe>
-      </div>
+      <iframe src="res/ecological-dynamics.html" scrolling="no"></iframe>
     </div>
-    
 
     <div id="neuro" class="research-content">
-       <div class="research-frame">
-      <iframe src="res/computational-neuroscience.html" scrolling="no" frameborder="0" onload="resizeIframe(this)></iframe>
-      </div>
+      <iframe src="res/computational-neuroscience.html" scrolling="no"></iframe>
     </div>
 
-    
-
     <div id="ml" class="research-content">
-      <div class="research-frame">
-      <iframe src="res/scientific-machine-learning.html" scrolling="no" frameborder="0" onload="resizeIframe(this)></iframe>
-      </div>
+      <iframe src="res/scientific-machine-learning.html" scrolling="no"></iframe>
     </div>
 
     <div id="pinns" class="research-content">
-      <div class="research-frame">
-      <iframe src="res/pinns-ai-simulations.html" scrolling="no" frameborder="0" onload="resizeIframe(this)></iframe>
-      </div>
+      <iframe src="res/pinns-ai-simulations.html" scrolling="no"></iframe>
     </div>
 
   </main>
@@ -83,29 +71,23 @@
 </div>
 
 <script src="js/research.js"></script>
-          <script>
-    function resizeIframe(iframe) {
 
-        function setHeight() {
-            iframe.style.height =
-                iframe.contentWindow.document.body.scrollHeight + "px";
+<script>
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'resize') {
+      const iframes = document.querySelectorAll('iframe');
+      iframes.forEach(iframe => {
+        if (iframe.contentWindow === e.source) {
+          // Exactly the height of the content, no extra buffer
+          iframe.style.height = e.data.height + 'px'; 
         }
-
-        setHeight();
-
-        iframe.contentWindow.addEventListener('resize', setHeight);
-
-        const observer = new MutationObserver(setHeight);
-
-        observer.observe(
-            iframe.contentWindow.document.body,
-            {
-                childList: true,
-                subtree: true,
-                attributes: true
-            }
-        );
+      });
     }
-    </script>
+  });
+</script>
+
+<footer>
+  <p>   © 2026 BioSysML Lab</p>
+</footer>
 </body>
 </html>
