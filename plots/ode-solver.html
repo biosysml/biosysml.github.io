@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ultimate Simulation Workspace & Engine</title>
+  <title>Ultimate Simulation Workspace (LaTeX Enabled)</title>
   
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script>
   <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
 
@@ -24,13 +25,13 @@
       margin: 0;
       background-color: var(--bg-color);
       display: flex;
-      height: 100vh;
+      height: 1000px;
       overflow: hidden;
       color: #333;
     }
 
     .sidebar {
-      width: 460px;
+      width: 480px;
       background: var(--panel-bg);
       padding: 20px;
       overflow-y: auto;
@@ -103,6 +104,17 @@
     .export-btn:hover { background: #084c66; }
 
     .eq-card { background: #f9fafc; padding: 12px; padding-top: 6px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 12px; }
+    
+    .disclaimer {
+      background-color: #fff3f3;
+      border-left: 4px solid #e74c3c;
+      padding: 12px;
+      margin-top: 25px;
+      font-size: 0.85rem;
+      color: #c0392b;
+      border-radius: 4px;
+      line-height: 1.4;
+    }
   </style>
 </head>
 <body>
@@ -120,7 +132,7 @@
       </select>
     </div>
 
-    <h3>1. System Vector Fields & Geometry</h3>
+    <h3>1. System Vector Fields</h3>
     <div id="equations-container"></div>
 
     <h3>2. Parameter Domain Constants</h3>
@@ -144,35 +156,69 @@
       </div>
     </div>
 
-    <h3>5. Frame Headings & Axis Metadata</h3>
+    <h3>5. Frame Typography & LaTeX Headings</h3>
+    <span class="help-text" style="display:block; margin-bottom:10px; color:#555;">
+      <em>Note: Wrap your text in <code>$ ... $</code> for LaTeX formatting.</em>
+    </span>
+    
     <div class="row">
       <div class="form-group" style="flex: 2;">
-        <label>Plot Frame Title</label>
-        <input type="text" id="plot-title" value="System Trajectories Phase Space">
+        <label>Plot Frame Title (LaTeX)</label>
+        <input type="text" id="plot-title" value="$\text{System Trajectories Phase Space}$">
       </div>
       <div class="form-group" style="flex: 1;">
         <label>Title Size (px)</label>
         <input type="number" id="title-size" value="18" min="8" max="48">
       </div>
     </div>
+    
     <div class="row">
       <div class="form-group" style="flex: 2;">
-        <label>X-Axis Label Description</label>
-        <input type="text" id="x-label" value="Time Dimension (t)">
+        <label>X-Axis Label (LaTeX)</label>
+        <input type="text" id="x-label" value="$Time\ (t)$">
       </div>
       <div class="form-group" style="flex: 1;">
         <label>Label Size</label>
         <input type="number" id="x-label-size" value="14" min="6" max="32">
       </div>
     </div>
+    
     <div class="row">
       <div class="form-group" style="flex: 2;">
-        <label>Y-Axis Label Description</label>
-        <input type="text" id="y-label" value="State Response Dynamics">
+        <label>Y-Axis Label (LaTeX)</label>
+        <input type="text" id="y-label" value="$\text{State Response Dynamics } \Phi(t)$">
       </div>
       <div class="form-group" style="flex: 1;">
         <label>Label Size</label>
         <input type="number" id="y-label-size" value="14" min="6" max="32">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>Legend Font Size</label>
+        <input type="number" id="legend-size" value="12" min="6" max="32">
+      </div>
+      <div class="form-group">
+        <label>Legend Position</label>
+        <select id="legend-pos">
+          <option value="top-right" selected>Inside Top Right (Default)</option>
+          <option value="top-left">Inside Top Left</option>
+          <option value="bottom-right">Inside Bottom Right</option>
+          <option value="bottom-left">Inside Bottom Left</option>
+          <option value="outside-right">Outside Right</option>
+          <option value="outside-bottom">Outside Bottom</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label>Tick Marks Size</label>
+        <input type="number" id="tick-size" value="12" min="6" max="32">
+      </div>
+      <div class="form-group">
+        <label>Tick Text Color</label>
+        <input type="color" id="tick-color" value="#444444">
       </div>
     </div>
 
@@ -217,16 +263,6 @@
         <input type="color" id="bg-paper" value="#ffffff">
       </div>
     </div>
-    <div class="row">
-      <div class="form-group">
-        <label>Tick Marks Size</label>
-        <input type="number" id="tick-size" value="12" min="6" max="32">
-      </div>
-      <div class="form-group">
-        <label>Tick Text Color</label>
-        <input type="color" id="tick-color" value="#444444">
-      </div>
-    </div>
     <div class="checkbox-group">
       <input type="checkbox" id="show-grid" checked>
       <label for="show-grid">Display Structural Coordinate Grid</label>
@@ -239,9 +275,9 @@
       <div class="form-group">
         <label>Target Export Encoding</label>
         <select id="export-format">
-          <option value="png">PNG Standard Presentation Graphics</option>
-          <option value="jpeg">JPEG Standard Compressed Layout</option>
-          <option value="svg">SVG Lossless Scalable Vector Asset</option>
+          <option value="png">PNG Standard Presentation</option>
+          <option value="jpeg">JPEG Standard Compressed</option>
+          <option value="svg">SVG Scalable Vector</option>
         </select>
       </div>
     </div>
@@ -257,6 +293,10 @@
     </div>
     <button class="export-btn" onclick="exportImage()">Download Render File</button>
     <button class="export-btn" onclick="exportData()">Download Compiled Log Data</button>
+
+    <div class="disclaimer">
+      <strong>⚠️ Notice:</strong> This tool uses the 4th-Order Runge-Kutta (RK4) numerical integration method. It may generate incorrect solutions under certain stiffness conditions, chaotic oscillations, or mathematical singularities. <strong>Do not use it blindly;</strong> always verify critical results mathematically or against independent rigorous solvers.
+    </div>
   </div>
 
   <div class="main-content">
@@ -300,9 +340,9 @@
         const card = document.createElement('div');
         card.className = 'eq-card';
         card.innerHTML = `
-          <label style="color:var(--secondary); font-size:0.9rem; margin-bottom:6px;">Variable Channel: ${v}(t)</label>
+          <label style="color:var(--secondary); font-size:0.9rem; margin-bottom:6px;">Variable Channel: $${v}(t)$</label>
           <div class="form-group" style="margin-bottom:6px;">
-            <label>Field Rate Derivative Expression (d${v}/dt):</label>
+            <label>Rate Expression (d${v}/dt):</label>
             <input type="text" id="eq-${v}" value="">
           </div>
           <div class="row">
@@ -352,6 +392,34 @@
       return params;
     }
 
+    // Helper to generate Legend layout object dynamically
+    function getLegendConfig(pos, size, color) {
+      const config = { font: { size: size, color: color }, bgcolor: 'rgba(255,255,255,0.7)', bordercolor: '#d6dbe3', borderwidth: 1 };
+      switch (pos) {
+        case 'outside-bottom':
+          config.orientation = 'h'; config.yanchor = 'top'; config.y = -0.2; config.xanchor = 'center'; config.x = 0.5;
+          break;
+        case 'top-right':
+          config.yanchor = 'top'; config.y = 0.99; config.xanchor = 'right'; config.x = 0.99;
+          break;
+        case 'top-left':
+          config.yanchor = 'top'; config.y = 0.99; config.xanchor = 'left'; config.x = 0.01;
+          break;
+        case 'bottom-right':
+          config.yanchor = 'bottom'; config.y = 0.01; config.xanchor = 'right'; config.x = 0.99;
+          break;
+        case 'bottom-left':
+          config.yanchor = 'bottom'; config.y = 0.01; config.xanchor = 'left'; config.x = 0.01;
+          break;
+        case 'outside-right':
+        default:
+          // Plotly's default outside legend
+          config.yanchor = 'auto'; config.y = 'auto'; config.xanchor = 'auto'; config.x = 1.05;
+          break;
+      }
+      return config;
+    }
+
     function solveAndPlot() {
       try {
         const params = parseParams(document.getElementById('params').value);
@@ -367,6 +435,9 @@
         
         const tickSize = parseInt(document.getElementById('tick-size').value);
         const tickColor = document.getElementById('tick-color').value;
+        const legendSize = parseInt(document.getElementById('legend-size').value);
+        const legendPos = document.getElementById('legend-pos').value;
+
         const showGrid = document.getElementById('show-grid').checked;
         const bgPlot = document.getElementById('bg-plot').value;
         const bgPaper = document.getElementById('bg-paper').value;
@@ -420,7 +491,6 @@
           t += dt;
         }
 
-        // Construct Plot Traces
         const traces = activeVars.map(v => {
           const lineStyle = document.getElementById(`style-${v}`).value;
           const lineWidth = parseFloat(document.getElementById(`width-${v}`).value);
@@ -428,7 +498,7 @@
             x: tArr,
             y: history[v],
             mode: 'lines',
-            name: `${v}(t)`,
+            name: `$${v}(t)$`, 
             line: { 
               width: lineWidth,
               dash: lineStyle === 'solid' ? '' : lineStyle 
@@ -461,6 +531,7 @@
             gridcolor: '#e2e8f0',
             automargin: true 
           },
+          legend: getLegendConfig(legendPos, legendSize, tickColor),
           autosize: true,
           margin: { l: 80, r: 40, t: 70, b: 80 },
           plot_bgcolor: bgPlot,
@@ -488,6 +559,9 @@
       
       const tickSize = parseInt(document.getElementById('tick-size').value);
       const tickColor = document.getElementById('tick-color').value;
+      const legendSize = parseInt(document.getElementById('legend-size').value);
+      const legendPos = document.getElementById('legend-pos').value;
+
       const showGrid = document.getElementById('show-grid').checked;
       const bgPlot = document.getElementById('bg-plot').value;
       const bgPaper = document.getElementById('bg-paper').value;
@@ -495,14 +569,13 @@
       const xAuto = document.getElementById('x-autorange').checked;
       const yAuto = document.getElementById('y-autorange').checked;
 
-      // Scaling scale multipliers relative to high resolution requested widths
       const scaleFactor = width / 1000;
 
       const exportOptions = {
         format: format,
         width: width,
         height: height,
-        filename: 'ode_highres_production_render',
+        filename: 'ode_latex_highres_render',
         imageDataOnly: false,
         layout: {
           margin: { l: Math.max(90, width * 0.08), r: 50, t: Math.max(90, height * 0.09), b: Math.max(90, height * 0.1) },
@@ -530,9 +603,7 @@
             autorange: yAuto,
             range: yAuto ? undefined : [parseFloat(document.getElementById('y-min').value), parseFloat(document.getElementById('y-max').value)]
           },
-          legend: {
-            font: { size: 12 * scaleFactor }
-          }
+          legend: getLegendConfig(legendPos, legendSize * scaleFactor, tickColor)
         }
       };
 
@@ -540,7 +611,7 @@
     }
 
     function exportData() {
-      if (globalData.length === 0) return alert("Execute execution runtime framework first.");
+      if (globalData.length === 0) return alert("Execute framework first.");
       
       const activeVars = variableNames.slice(0, currentNumEqs);
       let csvContent = "data:text/csv;charset=utf-8,t," + activeVars.join(",") + "\n";
@@ -568,7 +639,6 @@
       solveAndPlot();
     };
   </script>
-
   
 <script>
   function sendHeightToParent() {
