@@ -44,14 +44,14 @@ body {
 header {
   background: linear-gradient(135deg,#0b1f3a,#0c6c8f,#1f9c72);
   color: white;
-  padding: 22px 40px;
+  padding: 22px 60px;
   position: fixed;
   display: flex;
   justify-content: space-between;
   align-items: center;
   top: 0;
   left: 0;
-  width: 97%;
+  width: 100%;
   z-index: 100;
 }
 
