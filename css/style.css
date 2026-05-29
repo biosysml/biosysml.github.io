@@ -73,6 +73,12 @@ header {
 .sidebar button:hover {
   transform: translateX(8px);
 }
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
 
 nav a {
   position: relative;
@@ -101,7 +107,6 @@ nav a:hover::after {
 nav a {
   color: white;
   margin-left: 20px;
-  margin-right: 20px;
   text-decoration: none;
 }
 
